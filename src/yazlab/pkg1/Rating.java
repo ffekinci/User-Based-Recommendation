@@ -1,0 +1,545 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package yazlab.pkg1;
+
+import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import javax.imageio.ImageIO;
+
+/**
+ *
+ * @author ffeki
+ */
+public class Rating extends javax.swing.JFrame {
+
+    int oylanan = 0;
+    int sayac = 0;
+    String[] ImgL = new String[5];
+    int UserID = 0; //önceki sayfadan çekilecek!
+
+    /**
+     * Creates new form Rating
+     */
+    public Rating(int ID) {
+        initComponents();
+        UserID = ID;
+
+        DbConnect db = new DbConnect();
+        System.out.println(db.username);
+        oylanan = db.isRated(ID);
+        jL_Oylanan.setText("Oylanan sayısı: " + oylanan);
+        jB_Main.setVisible(false);
+        jComboBox1.setVisible(false);
+        Kaydet.setVisible(false);
+        jL_Sayfa.setText("1");
+        ShowBooks();
+        if (oylanan >= 10) {
+            jB_Main.setVisible(true);
+        }
+    }
+
+    String getUsername() {
+        String username = null;
+        DbConnect db = new DbConnect();
+        String sql = "SELECT * FROM users WHERE ID=" + UserID;
+        try {
+            db.rs = db.st.executeQuery(sql);
+            while (db.rs.next()) {
+                username = db.rs.getString("Username");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Rating.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return username;
+    }
+
+    public void SearchBook() {
+        sayac = 0;
+        String sql = "SELECT * FROM books WHERE Title LIKE '%" + jT_search.getText() + "%' LIMIT 5 OFFSET " + sayac;
+
+        Vector cols = new Vector();
+        cols.add("Fotoğraf");
+        cols.add("Kitap Adı");
+        cols.add("Yazar");
+        cols.add("ISBN");
+
+        DefaultTableModel Tablo = new DefaultTableModel(cols, 0) {
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return ImageIcon.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    case 3:
+                        return String.class;
+                    default:
+                        return String.class;
+                }
+            }
+        };
+
+        DbConnect db = new DbConnect();
+
+        try {
+            db.rs = db.st.executeQuery(sql);
+            Tablo.getDataVector().removeAllElements();
+
+            while (db.rs.next()) {
+
+                ImageIcon img = new ImageIcon(new URL(db.rs.getString("ImgS")));
+                Tablo.addRow(new Object[]{img, db.rs.getString("Title"), db.rs.getString("Author"), db.rs.getString("ISBN")});
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        jT_Books.setModel(Tablo);
+
+    }
+
+    public void ShowBooks() {
+
+        String sql = "SELECT * FROM books limit 5 OFFSET " + sayac * 5;
+        Vector cols = new Vector();
+        cols.add("Fotoğraf");
+        cols.add("Title");
+        cols.add("Author");
+        cols.add("ISBN");
+
+        DefaultTableModel Tablo = new DefaultTableModel(cols, 0) {
+            public Class getColumnClass(int column) {
+                switch (column) {
+                    case 0:
+                        return ImageIcon.class;
+                    case 1:
+                        return String.class;
+                    case 2:
+                        return String.class;
+                    default:
+                        return String.class;
+                }
+            }
+        };
+        DbConnect db = new DbConnect();
+        int a = 0;
+        try {
+            db.rs = db.st.executeQuery(sql);
+            Tablo.getDataVector().removeAllElements();
+
+            while (db.rs.next()) {
+
+                ImageIcon img = new ImageIcon(new URL(db.rs.getString("ImgS")));
+                Tablo.addRow(new Object[]{img, db.rs.getString("Title"), db.rs.getString("Author"), db.rs.getString("ISBN")});
+                ImgL[a] = db.rs.getString("ImgM");
+                a++;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        jT_Books.setModel(Tablo);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jT_search = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jT_Books = new javax.swing.JTable();
+        j_Onceki = new javax.swing.JButton();
+        j_Sonraki = new javax.swing.JButton();
+        jL_Sayfa = new javax.swing.JLabel();
+        jT_Sayfa = new javax.swing.JTextField();
+        j_Git = new javax.swing.JButton();
+        jL_image = new javax.swing.JLabel();
+        jL_title = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        Kaydet = new javax.swing.JButton();
+        jL_author = new javax.swing.JLabel();
+        jL_isbn = new javax.swing.JLabel();
+        jL_Oylanan = new javax.swing.JLabel();
+        jB_Main = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jT_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jT_searchActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("ARA");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jT_Books.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Title", "Author", "Image"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jT_Books.setRowHeight(150);
+        jT_Books.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jT_BooksMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(jT_Books);
+
+        j_Onceki.setText("<");
+        j_Onceki.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                j_OncekiActionPerformed(evt);
+            }
+        });
+
+        j_Sonraki.setText(">");
+        j_Sonraki.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                j_SonrakiActionPerformed(evt);
+            }
+        });
+
+        jL_Sayfa.setText("    ");
+
+        jT_Sayfa.setText("10");
+        jT_Sayfa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jT_SayfaActionPerformed(evt);
+            }
+        });
+
+        j_Git.setText("Git");
+        j_Git.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                j_GitActionPerformed(evt);
+            }
+        });
+
+        jL_title.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }));
+
+        Kaydet.setText("Kaydet");
+        Kaydet.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                KaydetActionPerformed(evt);
+            }
+        });
+
+        jL_author.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jL_isbn.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jL_Oylanan.setText("1");
+
+        jB_Main.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        jB_Main.setText("Anasayfa");
+        jB_Main.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jB_MainActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(155, 155, 155)
+                .addComponent(j_Onceki)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jL_Sayfa, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(j_Sonraki)
+                .addGap(18, 18, 18)
+                .addComponent(jT_Sayfa, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(j_Git)
+                .addContainerGap(541, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 651, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jT_search, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addGap(37, 37, 37)
+                        .addComponent(jL_Oylanan, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jB_Main, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(44, 44, 44)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jL_author, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jL_title, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jL_isbn, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(46, 46, 46)
+                                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(77, 77, 77)
+                                .addComponent(Kaydet)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jL_image, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jT_search, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jL_Oylanan, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jB_Main, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(j_Onceki)
+                    .addComponent(jL_Sayfa)
+                    .addComponent(j_Sonraki)
+                    .addComponent(jT_Sayfa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(j_Git))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(67, 67, 67)
+                .addComponent(jL_image, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35)
+                .addComponent(jL_title, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jL_author, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jL_isbn, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(Kaydet)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jT_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jT_searchActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jT_searchActionPerformed
+
+    private void j_OncekiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_j_OncekiActionPerformed
+        // TODO add your handling code here:
+        sayac--;
+        if (sayac < 0) {
+            sayac = 0;
+        }
+        ShowBooks();
+        jT_Sayfa.setText("" + (sayac + 1));
+        jL_Sayfa.setText("" + (sayac + 1));
+    }//GEN-LAST:event_j_OncekiActionPerformed
+
+    private void j_SonrakiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_j_SonrakiActionPerformed
+        // TODO add your handling code here:
+        int sayi = 0;
+        sayac++;
+        DbConnect db = new DbConnect();
+        String sql = "SELECT COUNT(ISBN) as total FROM books";
+        try {
+            db.rs = db.st.executeQuery(sql);
+            while (db.rs.next()) {
+                sayi = db.rs.getInt("total");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (sayac > (sayi / 5)) {
+            sayac = (sayi / 5);
+        }
+        ShowBooks();
+        jT_Sayfa.setText("" + (sayac + 1));
+        jL_Sayfa.setText("" + (sayac + 1));
+    }//GEN-LAST:event_j_SonrakiActionPerformed
+
+    private void jT_SayfaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jT_SayfaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jT_SayfaActionPerformed
+
+    private void j_GitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_j_GitActionPerformed
+        // TODO add your handling code here:
+        sayac = Integer.parseInt(jT_Sayfa.getText());
+        int sayi = 0;
+        DbConnect db = new DbConnect();
+        String sql = "SELECT COUNT(ISBN) as total FROM books";
+        try {
+            db.rs = db.st.executeQuery(sql);
+            while (db.rs.next()) {
+                sayi = db.rs.getInt("total");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (sayac > (sayi / 5)) {
+            sayac = (sayi / 5);
+        }
+        ShowBooks();
+        jT_Sayfa.setText("" + (sayac + 1));
+        jL_Sayfa.setText("" + (sayac + 1));
+    }//GEN-LAST:event_j_GitActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        SearchBook();
+        jL_Sayfa.setText("1");
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void KaydetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KaydetActionPerformed
+        // TODO add your handling code here:
+        DbConnect db = new DbConnect();
+        db.Rate(jL_isbn.getText(), UserID, jComboBox1.getSelectedIndex());
+        oylanan = db.isRated(UserID);
+        jL_Oylanan.setText("Oylanan sayısı: " + oylanan);
+        if (oylanan >= 10) {
+            jB_Main.setVisible(true);
+        }
+    }//GEN-LAST:event_KaydetActionPerformed
+
+    private void jT_BooksMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jT_BooksMouseClicked
+        // TODO add your handling code here:
+        URL url = null;
+        try {
+            url = new URL(ImgL[jT_Books.getSelectedRow()]);
+            //System.out.println(url);
+            BufferedImage image = ImageIO.read(url);
+            jL_image.setIcon(new ImageIcon(image));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        jL_title.setText(jT_Books.getValueAt(jT_Books.getSelectedRow(), 1).toString());
+        jL_author.setText(jT_Books.getValueAt(jT_Books.getSelectedRow(), 2).toString());
+        jL_isbn.setText(jT_Books.getValueAt(jT_Books.getSelectedRow(), 3).toString());
+        //System.out.println(jT_Books.getValueAt(jT_Books.getSelectedRow(), 3).toString());
+
+        DbConnect db = new DbConnect();
+        //System.out.println(db.isItRated(jT_Books.getValueAt(jT_Books.getSelectedRow(), 3).toString(), UserID));
+
+        jComboBox1.setSelectedIndex(db.isItRated(jT_Books.getValueAt(jT_Books.getSelectedRow(), 3).toString(), UserID));
+
+        jComboBox1.setVisible(true);
+        Kaydet.setVisible(true);
+    }//GEN-LAST:event_jT_BooksMouseClicked
+
+    private void jB_MainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jB_MainActionPerformed
+        // TODO add your handling code here:
+        dispose();
+        Main main = new Main(getUsername());
+        main.setVisible(true);
+
+    }//GEN-LAST:event_jB_MainActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Rating.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Rating.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Rating.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Rating.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Rating(5).setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Kaydet;
+    private javax.swing.JButton jB_Main;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jL_Oylanan;
+    private javax.swing.JLabel jL_Sayfa;
+    private javax.swing.JLabel jL_author;
+    private javax.swing.JLabel jL_image;
+    private javax.swing.JLabel jL_isbn;
+    private javax.swing.JLabel jL_title;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jT_Books;
+    private javax.swing.JTextField jT_Sayfa;
+    private javax.swing.JTextField jT_search;
+    private javax.swing.JButton j_Git;
+    private javax.swing.JButton j_Onceki;
+    private javax.swing.JButton j_Sonraki;
+    // End of variables declaration//GEN-END:variables
+}
