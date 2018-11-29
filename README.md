@@ -1,5 +1,5 @@
 # User-Based-Recommendation
-User Based Recommendation Desktio App
+User Based Recommendation Desktop App
 
 ## Sql File
 ```bash
