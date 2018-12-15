@@ -3,7 +3,7 @@ User Based Recommendation Desktop App
 
 ## Sql File
 ```bash
-http://www2.informatik.uni-freiburg.de/~cziegler/BX/
+https://drive.google.com/open?id=1G7cvfVwYkPfFzigixyQUCeeusG4zJMik
 ```
 ## Used Dataset
 Book-Crossing Dataset
