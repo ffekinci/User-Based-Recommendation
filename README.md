@@ -1,4 +1,4 @@
-# User-Based-Recommendation
+# User Based Collaborative Filtering
 User Based Recommendation Desktop App
 
 It recommend book according to the votes you give books. It make suggestion person closest to you. 
